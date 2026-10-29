@@ -1,0 +1,62 @@
+[
+  {
+    "variable": "APP_URL",
+    "definedIn": [
+      ".env.example"
+    ],
+    "usedIn": [],
+    "status": "Not filled in locally"
+  },
+  {
+    "variable": "DISABLE_HMR",
+    "definedIn": [],
+    "usedIn": [
+      "vite.config.ts:17",
+      "vite.config.ts:19"
+    ],
+    "status": "Missing"
+  },
+  {
+    "variable": "FORCE_COLOR",
+    "definedIn": [],
+    "usedIn": [
+      "src/output-table.ts:25"
+    ],
+    "status": "Missing"
+  },
+  {
+    "variable": "GEMINI_API_KEY",
+    "definedIn": [
+      ".env.example"
+    ],
+    "usedIn": [
+      "scripts/ai-issue-fixer.ts:6",
+      "scripts/test-gemini-resolver.ts:6"
+    ],
+    "status": "Missing"
+  },
+  {
+    "variable": "ISSUE_BODY",
+    "definedIn": [],
+    "usedIn": [
+      "scripts/ai-issue-fixer.ts:150"
+    ],
+    "status": "Missing"
+  },
+  {
+    "variable": "ISSUE_TITLE",
+    "definedIn": [],
+    "usedIn": [
+      "scripts/ai-issue-fixer.ts:149"
+    ],
+    "status": "Missing"
+  },
+  {
+    "variable": "NODE_ENV",
+    "definedIn": [],
+    "usedIn": [
+      "server.ts:73"
+    ],
+    "status": "Missing"
+  }
+]

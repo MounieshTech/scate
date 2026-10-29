@@ -1,0 +1,82 @@
+name: AI Issue Resolver (Gemini Auto-PR)
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  resolve-issue-and-open-pr:
+    # Trigger on any newly opened issue or when labeled 'auto-fix'
+    if: github.event.action == 'opened' || github.event.label.name == 'auto-fix'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Configure Git User
+        run: |
+          git config --global user.name "ai-studio-agent[bot]"
+          git config --global user.email "bot@aistudio.google.com"
+
+      - name: Execute Gemini AI Issue Resolver
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          npx tsx scripts/ai-issue-fixer.ts "$ISSUE_TITLE" "$ISSUE_BODY"
+
+      - name: Verify Fix with Test Suite
+        run: |
+          npm test
+
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          BRANCH_NAME="ai-fix/issue-${ISSUE_NUM}"
+          
+          # Check if Gemini modified any files
+          if [[ -n $(git status -s) ]]; then
+            git checkout -b "$BRANCH_NAME"
+            git add .
+            git commit -m "fix: resolve issue #${ISSUE_NUM} (${ISSUE_TITLE})"
+            git push origin "$BRANCH_NAME" --force
+            
+            gh pr create \
+              --title "Fix #${ISSUE_NUM}: ${ISSUE_TITLE}" \
+              --body "### Automated Fix by Gemini AI Agent
+
+Closes #${ISSUE_NUM}
+
+#### Summary
+This Pull Request was autonomously created by Gemini in response to Issue #${ISSUE_NUM}.
+
+- Analyzed codebase context
+- Applied code modifications
+- Verified with unit tests (\`npm test\` passed)" \
+              --base main \
+              --head "$BRANCH_NAME"
+          else
+            echo "No code changes were produced by the AI Agent."
+          fi

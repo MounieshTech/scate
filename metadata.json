@@ -1,0 +1,6 @@
+{
+  "name": "scate - Environment Variable Hygiene Scanner CLI",
+  "description": "A Node.js CLI tool that scans project directories for environment variables across .env files and code usage, auditing hygiene status in a clear terminal table or JSON.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
