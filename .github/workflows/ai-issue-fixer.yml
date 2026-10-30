@@ -69,9 +69,8 @@ jobs:
             git commit -m "fix: resolve issue #${ISSUE_NUM} (${ISSUE_TITLE})"
             git push origin "$BRANCH_NAME" --force
 
-            gh pr create \
-              --title "Fix #${ISSUE_NUM}: ${ISSUE_TITLE}" \
-              --body "### Automated Fix by Gemini AI Agent
+            cat > /tmp/pr_body.md <<EOF
+### Automated Fix by Gemini AI Agent
 
 Closes #${ISSUE_NUM}
 
@@ -80,7 +79,12 @@ This Pull Request was autonomously created by Gemini in response to Issue #${ISS
 
 - Analyzed codebase context
 - Applied code modifications
-- Verified with unit tests (\`npm test\` passed)" \
+- Verified with unit tests (\`npm test\` passed)
+EOF
+
+            gh pr create \
+              --title "Fix #${ISSUE_NUM}: ${ISSUE_TITLE}" \
+              --body-file /tmp/pr_body.md \
               --base main \
               --head "$BRANCH_NAME"
           else
