@@ -38,7 +38,9 @@ WHITESPACE_KEY = spaced_value
 test('2. isExampleEnvFile distinguishes example files from real env files', () => {
   assert.equal(isExampleEnvFile('.env.example'), true);
   assert.equal(isExampleEnvFile('.env.sample'), true);
+  assert.equal(isExampleEnvFile('.env.default'), true);
   assert.equal(isExampleEnvFile('.env.local.example'), true);
+  assert.equal(isExampleEnvFile('.env.local.default'), true);
 
   assert.equal(isExampleEnvFile('.env'), false);
   assert.equal(isExampleEnvFile('.env.local'), false);
