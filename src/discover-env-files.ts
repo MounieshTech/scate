@@ -117,8 +117,10 @@ export function isExampleEnvFile(filename: string): boolean {
   return (
     lower === '.env.example' ||
     lower === '.env.sample' ||
+    lower === '.env.default' ||
     lower.endsWith('.example') ||
-    lower.endsWith('.sample')
+    lower.endsWith('.sample') ||
+    lower.endsWith('.default')
   );
 }
 
@@ -182,7 +184,7 @@ export async function discoverEnvFiles(
       } else if (entry.isFile()) {
         const basename = entry.name;
         // Match .env, .env.local, .env.production, etc.
-        if (basename === '.env' || basename.startsWith('.env.')) {
+        if (basename === '.env' || basename.startsWith('.env.'))
           try {
             const content = await fs.promises.readFile(fullPath, 'utf8');
             const variables = parseEnvContent(content);
@@ -198,7 +200,6 @@ export async function discoverEnvFiles(
         }
       }
     }
-  }
 
   await walkDir(targetDir);
 
