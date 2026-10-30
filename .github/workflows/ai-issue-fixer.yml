@@ -70,23 +70,23 @@ jobs:
             git push origin "$BRANCH_NAME" --force
 
             cat > /tmp/pr_body.md <<EOF
-### Automated Fix by Gemini AI Agent
-
-Closes #${ISSUE_NUM}
-
-#### Summary
-This Pull Request was autonomously created by Gemini in response to Issue #${ISSUE_NUM}.
-
-- Analyzed codebase context
-- Applied code modifications
-- Verified with unit tests (\`npm test\` passed)
-EOF
-
-            gh pr create \
-              --title "Fix #${ISSUE_NUM}: ${ISSUE_TITLE}" \
-              --body-file /tmp/pr_body.md \
-              --base main \
-              --head "$BRANCH_NAME"
-          else
-            echo "No code changes were produced by the AI Agent."
-          fi
+            ### Automated Fix by Gemini AI Agent
+            
+            Closes #${ISSUE_NUM}
+            
+            #### Summary
+            This Pull Request was autonomously created by Gemini in response to Issue #${ISSUE_NUM}.
+            
+            - Analyzed codebase context
+            - Applied code modifications
+            - Verified with unit tests (\`npm test\` passed)
+            EOF
+            
+                        gh pr create \
+                          --title "Fix #${ISSUE_NUM}: ${ISSUE_TITLE}" \
+                          --body-file /tmp/pr_body.md \
+                          --base main \
+                          --head "$BRANCH_NAME"
+                      else
+                        echo "No code changes were produced by the AI Agent."
+                      fi
