@@ -2,8 +2,16 @@ import { GoogleGenAI, Type } from '@google/genai';
 import fs from 'node:fs';
 import path from 'node:path';
 
+const geminiApiKey = process.env.GEMINI_API_KEY;
+
+if (!geminiApiKey) {
+  throw new Error(
+    'GEMINI_API_KEY is not set. Add the repository secret before running the issue resolver.',
+  );
+}
+
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: geminiApiKey,
   httpOptions: {
     headers: {
       'User-Agent': 'aistudio-build',
@@ -25,7 +33,6 @@ export async function solveIssue(issueTitle: string, issueBody: string): Promise
 }> {
   console.log(`\n[AI Resolver] Analyzing Issue: "${issueTitle}"`);
 
-  // Target core source files of the repository
   const relevantFiles = [
     'src/types.ts',
     'src/discover-env-files.ts',
@@ -64,7 +71,7 @@ ${existingFilesContext}
    - "changes": an array of file changes, each with "filePath", "explanation", and "content" (complete file content).
 `;
 
-  const modelsToTry = ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-2.5-flash'];
+  const modelsToTry = ['gemini-3.8-flash', 'gemini-2.5-flash'];
   let lastError: Error | null = null;
 
   for (const model of modelsToTry) {
@@ -146,31 +153,4 @@ ${existingFilesContext}
     explanation: `Failed after trying models: ${lastError?.message}`,
     modifiedFiles: [],
   };
-}
-
-// CLI runner if invoked directly in GitHub Actions
-const isMain =
-  process.argv[1] &&
-  (process.argv[1].endsWith('ai-issue-fixer.ts') || process.argv[1].endsWith('ai-issue-fixer.js'));
-
-if (isMain) {
-  const issueTitle = process.env.ISSUE_TITLE || process.argv[2] || '';
-  const issueBody = process.env.ISSUE_BODY || process.argv[3] || '';
-
-  if (!issueTitle) {
-    console.error('Usage: tsx scripts/ai-issue-fixer.ts <issueTitle> [issueBody]');
-    process.exit(1);
-  }
-
-  solveIssue(issueTitle, issueBody)
-    .then((res) => {
-      if (!res.success) {
-        process.exit(1);
-      }
-      console.log(`[AI Resolver Done] Modified ${res.modifiedFiles.length} file(s).`);
-    })
-    .catch((err) => {
-      console.error(err);
-      process.exit(1);
-    });
 }
